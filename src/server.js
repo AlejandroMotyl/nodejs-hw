@@ -1,67 +1,35 @@
 import express from 'express';
 import cors from 'cors';
-import pino from 'pino-http';
+import studentsRoutes from './routes/notesRoutes.js';
 import 'dotenv/config';
+import { connectMongoDB } from './db/connectMongoDB.js';
+import { notFoundHandler } from './middleware/notFoundHandler.js';
+import { logger } from './middleware/logger.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
-const app = express();
+export const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 // ? Middleware
-app.use(express.json());
-app.use(cors());
+app.use(logger);
 app.use(
-  pino({
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-        messageFormat:
-          '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-        hideObject: true,
-      },
-    },
+  express.json({
+    type: ['application/json', 'application/vnd.api+json'],
+    limit: '100kb',
   }),
 );
+app.use(cors());
 
-// ? Code
+// ? Routes
+app.use(studentsRoutes);
 
-app.get('/notes', (req, res) => {
-  res.status(200).json({
-    message: 'Retrieved all notes',
-  });
-});
-
-app.get('/notes/:noteId', (req, res) => {
-  const noteId = req.params.noteId;
-
-  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
-});
-
-app.get('/test-error', () => {
-  throw new Error('Simulated server error');
-});
-
-// ! error Middleware
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  const isProd = process.env.NODE_ENV === 'production';
-
-  res.status(500).json({
-    message: isProd
-      ? 'Something went wrong. Please try again later.'
-      : err.message,
-  });
-});
+// ! Error middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // ? Server listen
+await connectMongoDB();
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
