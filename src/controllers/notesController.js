@@ -1,4 +1,3 @@
-import { TAGS } from '../constants/tags.js';
 import { Note } from '../models/note.js';
 import createHttpError from 'http-errors';
 
@@ -8,7 +7,7 @@ export const getAllNotes = async (req, res) => {
 
   const notesQuery = Note.find();
 
-  if (tag && TAGS.includes(tag)) {
+  if (tag) {
     notesQuery.where({ tag });
   }
 
