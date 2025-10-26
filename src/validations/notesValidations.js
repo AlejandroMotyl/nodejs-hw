@@ -16,20 +16,20 @@ export const getAllNotesSchema = {
   [Segments.QUERY]: Joi.object({
     page: Joi.number().min(1).default(1).messages({
       'number.base': 'Page must be a number',
-      'number.min': 'Page should have at least {#limit} characters',
+      'number.min': 'Page must be at least {#limit}',
     }),
     perPage: Joi.number().min(5).max(20).default(10).messages({
       'number.base': 'perPage must be a number',
-      'number.min': 'perPage should have at least {#limit} characters',
-      'number.max': 'perPage should have at most {#limit} characters',
+      'number.min': 'perPage must be at least {#limit}',
+      'number.max': 'perPage must be at most {#limit}',
     }),
     tag: Joi.string()
       .valid(...TAGS)
-      .message({
+      .messages({
         'string.base': 'Tag must be a string',
-        'string.valid': "Tag doesn't exist",
+        'any.only': "Tag doesn't exist",
       }),
-    search: Joi.string().trim().allow('').message({
+    search: Joi.string().trim().allow('').messages({
       'string.base': 'Search must be a string',
     }),
   }),
@@ -42,21 +42,21 @@ export const createNoteSchema = {
       'string.min': 'Title should have at least {#limit} characters',
       'any.required': 'Title is required',
     }),
-    content: Joi.string().trim().allow('').message({
+    content: Joi.string().trim().allow('').messages({
       'string.base': 'content must be a string',
     }),
     tag: Joi.string()
       .valid(...TAGS)
-      .message({
+      .messages({
         'string.base': 'Tag must be a string',
-        'string.valid': "Tag doesn't exist",
+        'any.only': "Tag doesn't exist",
       }),
   }),
 };
 
 export const updateNoteSchema = {
   [Segments.PARAMS]: Joi.object({
-    studentId: Joi.string().custom(objectIdValidator).required(),
+    noteId: Joi.string().custom(objectIdValidator).required(),
   }),
   [Segments.BODY]: Joi.object({
     title: Joi.string().min(1).required().messages({
@@ -64,14 +64,14 @@ export const updateNoteSchema = {
       'string.min': 'Title should have at least {#limit} characters',
       'any.required': 'Title is required',
     }),
-    content: Joi.string().trim().allow('').message({
+    content: Joi.string().trim().allow('').messages({
       'string.base': 'content must be a string',
     }),
     tag: Joi.string()
       .valid(...TAGS)
-      .message({
+      .messages({
         'string.base': 'Tag must be a string',
-        'string.valid': "Tag doesn't exist",
+        'any.only': "Tag doesn't exist",
       })
       .min(1),
   }),
