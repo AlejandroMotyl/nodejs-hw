@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import notesRoutes from './routes/notesRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import 'dotenv/config';
 import { connectMongoDB } from './db/connectMongoDB.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
@@ -27,6 +28,7 @@ app.use(cookieParser());
 // ? Routes
 app.use(notesRoutes);
 app.use(authRoutes);
+app.use(userRoutes);
 
 // ! Error middleware
 app.use(notFoundHandler);
